@@ -172,3 +172,57 @@ because boundary pixels form a large fraction of their area.
 
 This motivates the uncertainty estimation work, since apical slices are
 precisely where a clinically deployable model should signal low confidence.
+
+## Clinical biomarkers
+
+Segmentations are converted into the measurements used in cardiology:
+ventricular volumes at end diastole and end systole, ejection fractions,
+myocardial mass, wall thickness, and body surface area indexed equivalents.
+Volume is computed from voxel counts using the preprocessed in-plane spacing
+and the patient's original slice thickness. All formulas are verified against
+geometric shapes of known volume in the module self-test.
+
+### Clinical validity
+
+Biomarkers derived from ground truth masks reproduce the defining features of
+each diagnosis group without any fitting:
+
+| Group | LVEDV (mL) | LV EF (%) | RV EF (%) | LV mass (g) | Max wall (mm) |
+|---|---|---|---|---|---|
+| Normal | 130.3 | 60.4 | 55.1 | 102.0 | 8.7 |
+| Dilated cardiomyopathy | 285.0 | 18.3 | 31.9 | 170.0 | 9.1 |
+| Hypertrophic cardiomyopathy | 128.8 | 67.7 | 59.7 | 177.4 | 13.8 |
+| Myocardial infarction | 172.2 | 31.0 | 55.4 | 122.8 | 9.8 |
+| Abnormal right ventricle | 107.1 | 54.7 | 31.4 | 77.4 | 8.0 |
+
+Dilated cardiomyopathy shows a markedly enlarged ventricle with severely
+reduced ejection fraction, hypertrophic cardiomyopathy shows the greatest
+mass and wall thickness with preserved ejection fraction, and the abnormal
+right ventricle group is the only one in which right ventricular function
+falls while left ventricular function is spared.
+
+### Agreement between predicted and ground truth biomarkers
+
+| Biomarker | Bias | 95% limits of agreement | r |
+|---|---|---|---|
+| LV EDV (mL) | -2.45 | -15.41 to 10.50 | 0.997 |
+| LV ESV (mL) | 1.39 | -16.35 to 19.13 | 0.994 |
+| LV EF (%) | -2.47 | -14.14 to 9.21 | 0.955 |
+| RV EDV (mL) | 1.85 | -19.66 to 23.37 | 0.981 |
+| RV EF (%) | -8.43 | -26.92 to 10.06 | 0.850 |
+| LV mass (g) | 5.96 | -12.10 to 24.02 | 0.984 |
+| Max wall thickness (mm) | 0.19 | -1.76 to 2.13 | 0.923 |
+
+Left sided measurements agree closely. Right ventricular ejection fraction is
+the weakest, with a systematic underestimate of 8.4 percentage points. This
+is consistent with the slice position analysis: apical right ventricle Dice
+falls to 0.42, and errors on the smallest slices propagate most strongly into
+end systolic volume, which appears in the numerator of ejection fraction.
+
+### Limitations
+
+Wall thickness uses a concentric circle approximation and therefore averages
+thickness around the ventricular ring. Hypertrophic cardiomyopathy is
+typically asymmetric septal hypertrophy, so focal thickening is diluted: the
+measured group mean of 13.8 mm sits below the clinical diagnostic threshold
+of 15 mm despite the group being correctly separated from all others.
