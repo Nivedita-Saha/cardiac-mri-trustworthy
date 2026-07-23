@@ -32,3 +32,4 @@ results/metrics/*
 
 # Keep small summary CSVs
 !results/metrics/*.csv
+!results/metrics/*.json

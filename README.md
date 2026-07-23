@@ -91,3 +91,23 @@ Profiled across all 100 ACDC training patients (see
 The 2.7-fold variation in in-plane spacing and the 20-fold variation in
 intensity maxima are the two properties that most directly shape the
 preprocessing pipeline.
+
+## Preprocessing
+
+Each decision follows from the measured dataset properties above.
+
+| Step | Choice | Reason |
+|---|---|---|
+| Resampling | 1.5 mm in-plane, bilinear for images, nearest for masks | Measured spacing varies 2.7-fold across patients |
+| Normalisation | Per-slice, 1st-99th percentile clip then z-score | MRI intensities have no absolute scale; maxima vary 20-fold |
+| Spatial size | Centre crop or zero pad to 256 x 256 | Image dimensions vary from 154 to 512 |
+| Splits | Patient level, stratified by diagnosis group, 70/15/15 | Slices from one heart are correlated, so slice-level splitting would leak |
+| Caching | Preprocessed once to compressed float16 archives | Avoids repeated decompression and produces a compact artefact for GPU training |
+| Augmentation | Rotation, zoom, flips, intensity scale and shift | Geometric transforms applied identically to image and mask |
+
+Two correctness checks are included rather than assumed. `crop_retention`
+confirms that centre cropping removes no labelled pixels for any patient,
+and the augmentation pipeline was verified to keep image and mask spatially
+aligned. Splits are validated to contain no patient overlap.
+
+Resulting dataset: 1356 training, 284 validation, and 262 test slices.
