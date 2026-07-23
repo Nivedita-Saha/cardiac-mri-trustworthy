@@ -29,6 +29,10 @@ The diagnosis figure is fully end to end: an image enters, the network
 segments it, biomarkers are computed from the predicted masks, and the
 classifier diagnoses from those. No ground truth is used anywhere in that path.
 
+![3D reconstruction](results/figures/heart_3d.png)
+
+*Ground truth and predicted anatomy, reconstructed in 3D from 2D slice predictions.*
+
 ---
 
 ## Pipeline
@@ -99,6 +103,12 @@ nnU-Net figures (Isensee et al., 2021) are given for context, not as a like
 for like comparison: that system uses extensive automated configuration and
 ensembling.
 
+![Test predictions](results/figures/test_predictions.png)
+
+*Worst, median and best test volumes. Left to right: image, ground truth, prediction.*
+
+![Training curve](results/figures/training_curve.png)
+
 ### Post-processing
 
 Keeping only the largest connected component per structure, motivated by the
@@ -125,6 +135,8 @@ Aggregate Dice conceals substantial variation with slice position:
 | Mid (0.4–0.6) | 0.813 | 0.875 | 0.944 |
 | 0.6–0.8 | 0.639 | 0.864 | 0.943 |
 | Apex (0.8–1.0) | 0.423 | 0.602 | 0.759 |
+
+![Accuracy by slice position](results/figures/dice_by_slice_position.png)
 
 Performance is non-monotonic: it dips at the base, where the ventricle
 boundary is ambiguous near the valve plane, peaks just below it, then falls
@@ -211,6 +223,10 @@ without any supervision on feature relevance:
 | Myocardial infarction | LV EF, LV ESV index | Impaired contraction |
 | Normal | LV EF | Preserved systolic function |
 | Abnormal right ventricle | LV to RV volume ratio, RV EF, RV ESV | Right-sided dysfunction with spared left ventricle |
+
+![SHAP importance](results/figures/shap_importance.png)
+
+*Left: overall biomarker importance. Right: which biomarker explains which diagnosis.*
 
 Left ventricular ejection fraction is the single most influential biomarker
 overall, followed by end systolic volume measures.
@@ -363,6 +379,10 @@ cannot be separated from a pathology effect, and no such claim is made.
 | Splits | Patient level, stratified by group, 70/15/15 | Slices from one heart are correlated |
 | Caching | Preprocessed once to compressed float16 archives | Avoids repeated decompression |
 | Augmentation | Rotation, zoom, flips, intensity scale and shift | Geometric transforms applied identically to image and mask |
+
+![Augmentation examples](results/figures/augmentation_examples.png)
+
+*Training augmentation. The mask follows the image exactly through rotation, zoom and flips.*
 
 Resulting dataset: 1356 training, 284 validation, 262 test slices.
 
