@@ -73,3 +73,21 @@ Lundberg, S.M. and Lee, S.-I. (2017) 'A unified approach to interpreting model
 predictions', Advances in Neural Information Processing Systems, 30,
 pp. 4765-4774.
 
+
+## Dataset characteristics
+
+Profiled across all 100 ACDC training patients (see
+`results/metrics/dataset_summary.csv`):
+
+| Property | Range | Implication |
+|---|---|---|
+| Diagnosis groups | 20 patients each across 5 groups | Balanced, no class weighting required |
+| Image dimensions | 154-428 x 154-512 | Crop and pad to a fixed 256 x 256 |
+| Slices per volume | 6 to 18 | Build the dataset as a flat slice list |
+| In-plane spacing | 0.70 to 1.92 mm | Resample to a common 1.5 mm |
+| Slice thickness | 5 to 10 mm | Strongly anisotropic, motivating 2D over 3D |
+| Intensity maximum | 184 to 4025 | Per-image normalisation required |
+
+The 2.7-fold variation in in-plane spacing and the 20-fold variation in
+intensity maxima are the two properties that most directly shape the
+preprocessing pipeline.

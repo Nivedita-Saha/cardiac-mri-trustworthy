@@ -29,3 +29,6 @@ results/metrics/*
 
 # IDE
 .vscode/
+
+# Keep small summary CSVs
+!results/metrics/*.csv
