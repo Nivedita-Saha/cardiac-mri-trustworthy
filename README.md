@@ -111,3 +111,41 @@ and the augmentation pipeline was verified to keep image and mask spatially
 aligned. Splits are validated to contain no patient overlap.
 
 Resulting dataset: 1356 training, 284 validation, and 262 test slices.
+
+## Segmentation results
+
+A 2D U-Net (6.5M parameters, MONAI) trained for 40 epochs with a combined
+Dice and cross entropy loss, AdamW, and a cosine learning rate schedule.
+Metrics are computed per volume after reassembling slices into patient and
+phase volumes, so they are directly comparable with published ACDC results.
+
+| Structure | Dice | HD95 (mm) | nnU-Net Dice |
+|---|---|---|---|
+| Right ventricle | 0.833 +/- 0.102 | 10.08 | 0.906 |
+| Myocardium | 0.862 +/- 0.044 | 6.87 | 0.902 |
+| Left ventricle cavity | 0.931 +/- 0.050 | 4.44 | 0.943 |
+| Mean | 0.875 +/- 0.050 | | 0.917 |
+
+nnU-Net figures are the published benchmark (Isensee et al., 2021) and are
+included for context, not as a like for like comparison: that system uses
+extensive automated configuration and ensembling.
+
+### Post-processing
+
+Keeping only the largest connected component per structure, motivated by the
+fact that a heart contains exactly one of each, improved both metrics:
+
+| Structure | Dice before | Dice after | HD95 before | HD95 after |
+|---|---|---|---|---|
+| Right ventricle | 0.819 | 0.833 | 27.33 | 10.08 |
+| Myocardium | 0.859 | 0.862 | 10.66 | 6.87 |
+| Left ventricle cavity | 0.916 | 0.931 | 11.16 | 4.44 |
+
+The large Hausdorff reduction reflects small disconnected false positives far
+from the heart. Dice is relatively insensitive to these, whereas Hausdorff
+distance is dominated by them, which is why both metrics are reported.
+
+### Performance by diagnosis group
+
+DCM 0.894, HCM 0.881, RV 0.874, NOR 0.870, MINF 0.857. Performance is
+consistent across pathologies, with myocardial infarction hardest.

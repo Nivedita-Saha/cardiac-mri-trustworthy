@@ -1,0 +1,5 @@
+structure,dice_mean,dice_std,hd95_mean_mm,hd95_std_mm,dice_mean_raw,hd95_mean_mm_raw
+RV,0.8327,0.1024,10.084,5.938,0.8187,27.33
+myocardium,0.8617,0.0443,6.871,5.924,0.8589,10.661
+LV,0.931,0.0502,4.439,4.554,0.9161,11.156
+mean,0.8751,0.0498,,,0.8646,

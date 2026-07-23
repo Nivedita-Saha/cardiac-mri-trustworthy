@@ -32,7 +32,8 @@ def build_cache(split_name, patients, root="data/raw/training", out_dir=CACHE_DI
                 a, b = preprocess_slice(img[:, :, i], msk[:, :, i], (sx, sy))
                 images.append(a.astype(np.float16))
                 masks.append(b)
-                meta.append((p["patient"], p["group"], phase, i))
+                meta.append((p["patient"], p["group"], phase, i,
+                             float(p["spacing"][2])))
 
     if not images:
         raise ValueError(f"split '{split_name}' contains no slices")
@@ -50,6 +51,7 @@ def build_cache(split_name, patients, root="data/raw/training", out_dir=CACHE_DI
         group=np.array([m[1] for m in meta]),
         phase=np.array([m[2] for m in meta]),
         slice_index=np.array([m[3] for m in meta], dtype=np.int16),
+        spacing_z=np.array([m[4] for m in meta], dtype=np.float32),
     )
     return out_path, images.shape
 
