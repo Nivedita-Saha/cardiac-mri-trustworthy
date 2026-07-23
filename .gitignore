@@ -1,0 +1,31 @@
+# Environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Data (never commit medical imaging data)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Model weights and large outputs
+*.pth
+*.pt
+*.ckpt
+
+# Results (keep folders, ignore contents except figures)
+results/metrics/*
+!results/metrics/.gitkeep
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
