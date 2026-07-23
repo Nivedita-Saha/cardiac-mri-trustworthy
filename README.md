@@ -61,7 +61,21 @@ from Siemens, Philips, GE and Canon scanners across hospitals in Spain,
 Germany and Canada. Used only for zero-shot generalisation testing; 34
 patients from the open validation set.
 
-Imaging data is not included in this repository.
+Imaging data is not included in this repository. Both datasets require
+registration and agreement to their respective terms of use.
+
+**Required citations.** Both datasets mandate citation of their challenge
+publications in any work using them:
+
+> Bernard, O., Lalande, A., Zotti, C., Cervenansky, F. et al. (2018) 'Deep
+> learning techniques for automatic MRI cardiac multi-structures segmentation
+> and diagnosis: is the problem solved?', *IEEE Transactions on Medical
+> Imaging*, 37(11), pp. 2514-2525. doi: 10.1109/TMI.2018.2837502
+
+> Campello, V.M., Gkontra, P., Izquierdo, C., Martin-Isla, C. et al. (2021)
+> 'Multi-centre, multi-vendor and multi-disease cardiac segmentation: the
+> M&Ms challenge', *IEEE Transactions on Medical Imaging*, 40(12),
+> pp. 3543-3554. doi: 10.1109/TMI.2021.3090082
 
 ### Measured dataset properties
 
