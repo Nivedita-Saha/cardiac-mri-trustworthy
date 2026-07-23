@@ -1,0 +1,18 @@
+{
+  "cv_accuracy": 0.8588,
+  "cv_folds": 5,
+  "test_accuracy_predicted_masks": 0.8667,
+  "test_accuracy_ground_truth_masks": 1.0,
+  "n_cv_patients": 85,
+  "n_test_patients": 15,
+  "top_features": [
+    "lv_ef_pct",
+    "lv_esv_index",
+    "lv_esv_ml",
+    "lv_rv_edv_ratio",
+    "wall_thickness_max_mm",
+    "mass_to_volume",
+    "rv_esv_ml",
+    "rv_ef_pct"
+  ]
+}

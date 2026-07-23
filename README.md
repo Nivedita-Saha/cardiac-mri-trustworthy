@@ -226,3 +226,45 @@ thickness around the ventricular ring. Hypertrophic cardiomyopathy is
 typically asymmetric septal hypertrophy, so focal thickening is diluted: the
 measured group mean of 13.8 mm sits below the clinical diagnostic threshold
 of 15 mm despite the group being correctly separated from all others.
+
+## Explainable diagnosis
+
+A Random Forest classifies the five diagnosis groups from the biomarkers, and
+SHAP identifies which measurements drive each prediction.
+
+| Evaluation | Accuracy | Patients |
+|---|---|---|
+| 5-fold cross validation, ground truth biomarkers | 0.859 | 85 |
+| End to end test, biomarkers from predicted segmentations | 0.867 | 15 |
+| Test patients, ground truth biomarkers | 1.000 | 15 |
+
+The end to end figure is the meaningful one: no ground truth is used anywhere
+in that path. An image enters, the U-Net segments it, biomarkers are computed
+from the predicted masks, and the classifier diagnoses from those. The test
+set contains only 15 patients, so each corresponds to 6.7 percentage points,
+and the cross validated figure is the more stable estimate.
+
+### What the model uses
+
+SHAP recovers the clinically established discriminator for each condition
+without supervision on feature relevance:
+
+| Group | Top biomarkers | Clinical interpretation |
+|---|---|---|
+| Dilated cardiomyopathy | LV ESV index, LV ESV, LV EF | Enlarged ventricle emptying poorly |
+| Hypertrophic cardiomyopathy | Max and mean wall thickness, mass to volume ratio | Thickened myocardium |
+| Myocardial infarction | LV EF, LV ESV index | Impaired contraction |
+| Normal | LV EF | Preserved systolic function |
+| Abnormal right ventricle | LV to RV volume ratio, RV EF, RV ESV | Right sided dysfunction with spared left ventricle |
+
+Overall, left ventricular ejection fraction is the single most influential
+biomarker, followed by end systolic volume measures.
+
+### Errors
+
+Cross validation errors concentrate on the myocardial infarction and dilated
+cardiomyopathy boundary, which is expected since both present with reduced
+ejection fraction and are distinguished clinically by wall motion pattern
+rather than by global function. The two end to end test errors were a normal
+case predicted as abnormal right ventricle and a hypertrophic case predicted
+as normal.
