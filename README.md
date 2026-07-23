@@ -149,3 +149,26 @@ distance is dominated by them, which is why both metrics are reported.
 
 DCM 0.894, HCM 0.881, RV 0.874, NOR 0.870, MINF 0.857. Performance is
 consistent across pathologies, with myocardial infarction hardest.
+
+## Error analysis
+
+Aggregate Dice conceals substantial variation with slice position:
+
+| Position | RV | Myocardium | LV |
+|---|---|---|---|
+| Base (0.0-0.2) | 0.729 | 0.843 | 0.906 |
+| 0.2-0.4 | 0.908 | 0.898 | 0.949 |
+| Mid (0.4-0.6) | 0.813 | 0.875 | 0.944 |
+| 0.6-0.8 | 0.639 | 0.864 | 0.943 |
+| Apex (0.8-1.0) | 0.423 | 0.602 | 0.759 |
+
+Performance is non-monotonic. It dips at the base, where the ventricle
+boundary is ambiguous near the valve plane and where the dataset's
+unlabelled slices occur, peaks just below the base, then falls sharply
+toward the apex. The accompanying figure shows that right ventricle
+cross-sectional area falls roughly four-fold from base to apex, and Dice
+tracks that reduction closely: small structures are penalised heavily
+because boundary pixels form a large fraction of their area.
+
+This motivates the uncertainty estimation work, since apical slices are
+precisely where a clinically deployable model should signal low confidence.
