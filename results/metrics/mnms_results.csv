@@ -1,0 +1,6 @@
+vendor,vendor_name,n_volumes,RV,myocardium,LV,mean
+A,Siemens,8,0.6481,0.7406,0.8436,0.7441
+B,Philips,20,0.8898,0.8461,0.918,0.8846
+C,GE,20,0.8269,0.8293,0.8599,0.8387
+D,Canon,20,0.8317,0.8131,0.9082,0.851
+ALL,all vendors,68,0.8258,0.819,0.8893,0.8447

@@ -333,3 +333,68 @@ given any information about slice position.
 Reviewing the least confident fifth of slices would surface almost all of
 the genuinely poor segmentations, which is the practical form a trustworthy
 deployment would take.
+
+## Cross-scanner generalisation
+
+The ACDC-trained model was applied to the M&Ms multi-vendor dataset with no
+retraining and no fine tuning. M&Ms comprises studies from four scanner
+vendors across hospitals in Spain, Germany and Canada, against ACDC's single
+centre in Dijon using two Siemens scanners.
+
+### Label convention
+
+M&Ms labels the LV cavity as 1 and the RV as 3, the reverse of ACDC. Rather
+than assume the published convention, it is verified geometrically: the LV
+cavity is enclosed by myocardium and the RV is not, so the enclosure fraction
+identifies the correct mapping. Measured over 40 slices, label 1 scored 0.982
+and label 3 scored 0.233, confirming that remapping is required. Without it,
+RV predictions would be scored against LV ground truth and the resulting
+near-zero Dice would be misread as catastrophic domain shift.
+
+### Zero-shot results
+
+| Structure | ACDC test | M&Ms zero-shot |
+|---|---|---|
+| Right ventricle | 0.833 | 0.826 |
+| Myocardium | 0.862 | 0.819 |
+| Left ventricle cavity | 0.931 | 0.889 |
+| Mean | 0.875 | 0.845 |
+
+The mean Dice falls by 0.030, a relative drop of 3.5%. Retaining this level
+of performance across unseen vendors and centres without adaptation suggests
+the per-slice percentile normalisation and intensity augmentation used during
+training were effective, since these directly target the intensity
+variability that differs most across scanners.
+
+### Where performance actually drops
+
+Aggregated by vendor, Siemens appears weakest, but this is an artefact of
+sample size. Vendor A contributes only 4 patients, and its median Dice
+(0.846) is comparable to GE (0.850) and Canon (0.860); the low mean (0.744)
+is driven by two hypertrophic cases.
+
+The consistent effects are pathology and cardiac phase:
+
+| Pathology | Median Dice | n volumes |
+|---|---|---|
+| Hypertrophic cardiomyopathy | 0.832 | 20 |
+| Hypertensive heart disease | 0.835 | 8 |
+| Athlete's heart syndrome | 0.838 | 2 |
+| Normal | 0.882 | 18 |
+| Dilated cardiomyopathy | 0.883 | 16 |
+| Abnormal right ventricle | 0.898 | 2 |
+
+| Phase | Median Dice |
+|---|---|
+| End diastole | 0.878 |
+| End systole | 0.848 |
+
+Hypertrophic cardiomyopathy is hardest across all vendors, and end systole is
+consistently harder than end diastole. Both are consistent with the earlier
+finding that accuracy tracks structure size: end systolic chambers are
+smaller, and hypertrophy thickens the myocardium while narrowing the cavity.
+
+Hypertrophic cases on Vendor A are notably poor (median 0.578 against 0.837
+to 0.871 on other vendors), but with four volumes from two patients a vendor
+effect cannot be separated from a pathology effect at this sample size, and
+no such claim is made.
