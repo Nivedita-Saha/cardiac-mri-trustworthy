@@ -268,3 +268,68 @@ ejection fraction and are distinguished clinically by wall motion pattern
 rather than by global function. The two end to end test errors were a normal
 case predicted as abnormal right ventricle and a hypertrophic case predicted
 as normal.
+
+## Uncertainty estimation
+
+Dropout was enabled during training, so Monte Carlo dropout uncertainty
+required no retraining: dropout layers are reactivated at inference and
+twenty stochastic forward passes are run per slice. Uncertainty is the
+predictive entropy of the mean softmax distribution and the variance of
+predicted probabilities across passes.
+
+### Measuring uncertainty in the right place
+
+Averaged over the whole slice, entropy correlates only weakly with error
+(r = -0.11) and appears to fall toward the apex, implying the model is most
+confident where it performs worst. This is an artefact of the measurement:
+a slice is overwhelmingly confident background, apical slices contain the
+smallest structures, so a slice-wide mean measures structure size rather
+than confidence.
+
+Restricting the average to the predicted foreground plus a 12 pixel margin,
+the region where the segmentation decision is actually made, removes the
+confound:
+
+| Measure | Correlation with slice Dice |
+|---|---|
+| Whole slice entropy | -0.112 |
+| Whole slice variance | -0.422 |
+| Decision region entropy | -0.727 |
+| Decision region variance | -0.782 |
+
+### Calibration
+
+Dice falls monotonically with uncertainty quartile:
+
+| Uncertainty quartile | Mean Dice |
+|---|---|
+| Lowest | 0.896 |
+| Second | 0.865 |
+| Third | 0.820 |
+| Highest | 0.543 |
+
+Uncertainty is U-shaped with slice position, mirroring accuracy:
+
+| Position | Entropy | Dice |
+|---|---|---|
+| Base (0.0-0.2) | 0.132 | 0.796 |
+| 0.2-0.4 | 0.099 | 0.911 |
+| Mid (0.4-0.6) | 0.106 | 0.867 |
+| 0.6-0.8 | 0.107 | 0.807 |
+| Apex (0.8-1.0) | 0.138 | 0.573 |
+
+The model is most uncertain at the base and the apex, the two regions
+independently identified as hardest in the error analysis, without being
+given any information about slice position.
+
+### Clinical triage
+
+| Slices flagged for review | Share of the worst 10% caught |
+|---|---|
+| Most uncertain 5% | 48.1% |
+| Most uncertain 10% | 59.3% |
+| Most uncertain 20% | 92.6% |
+
+Reviewing the least confident fifth of slices would surface almost all of
+the genuinely poor segmentations, which is the practical form a trustworthy
+deployment would take.
